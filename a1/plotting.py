@@ -1,14 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.animation import FuncAnimation, PillowWriter
 
 
 def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
                          x_support, y_support):
     """plot_grad_descent: plotting the gradient descent iterations.
-
     Generates the
-
     :param h: hypothesis function that models our data (x) using theta
     :type h: typing.Callable[[np.ndarray, np.ndarray], np.ndarray]
     :param grad_h: function for the gradient of our hypothesis function
@@ -47,7 +46,6 @@ def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
     """
     steps = 500
     _, thetas = grad_des(h, grad_h, loss, dloss, x, y, steps)
-    print(thetas)
 
     fig, ax = plt.subplots()
     ax.set_xlim([x_support[0], x_support[1]])
@@ -82,16 +80,14 @@ def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
     ani = animation.FuncAnimation(fig, animate, steps,
                                   init_func=init, interval=500, blit=True)
 
-    ani.save("gradDes_anim.gif", writer='imagemagick', fps=30)
+    ani.save("gradDes_anim.gif", writer='ffmpeg', fps=30)
 
     return None
 
 
 def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support):
     """plot_grad_descent: plotting the gradient descent iterations.
-
     Generates the
-
     :param h: hypothesis function that models our data (x) using theta
     :type h: typing.Callable[[np.ndarray, np.ndarray], np.ndarray]
     :param grad_h: function for the gradient of our hypothesis function
@@ -131,7 +127,6 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
     import sys
     steps = 500
     _, thetas = grad_des(h, grad_h, loss, dloss, x, y, steps)
-    print(thetas)
 
     fig, ax = plt.subplots()
     ax.set_xlim([min(x) - 0.5, max(x) + 0.5])
@@ -163,7 +158,6 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
     ani = animation.FuncAnimation(fig, animate, steps,
                                   init_func=init, interval=500, blit=True)
 
-    writer = animation.ImageMagickFileWriter(fps=30)
-    ani.save("linear_anim.gif", writer=writer)
+    ani.save("linear_anim.gif", writer='imagemagick', fps=30)
 
     return None

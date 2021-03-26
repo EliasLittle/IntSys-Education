@@ -3,6 +3,7 @@
 import typing
 
 import numpy as np
+import random
 from plotting import plot_grad_descent_1d, plot_linear_1d
 
 
@@ -264,9 +265,16 @@ def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        ix = random.randrange(len(x)-1)
+        grad = grad_loss_f(h, grad_h, theta, x[ix], y[ix])
+        for i in range(0, len(theta)):
+            theta[i] -= .01*grad[i]
+        history = np.append(history, theta)
 
-    # TODO 2
-    return np.zeros((1,))
+    return theta, history
 
 
 def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
@@ -308,10 +316,17 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        batch_size = 10
+        minibatch = [random.randrange(len(x)-1) for _ in range(batch_size)]
+        grad = grad_loss_f(h, grad_h, theta, x[minibatch], y[minibatch])
+        for i in range(0, len(theta)):
+            theta[i] -= .01*grad[i]
+        history = np.append(history, theta)
 
-    # TODO 3: Write the stochastic mini-batch gradient descent algorithm without
-    # matrix operations or numpy vectorization
-    return np.zeros((1,))
+    return theta, history
 
 
 def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
@@ -488,8 +503,20 @@ def save_linear_gif():
 
 
 def test_gd(grad_des_f):
-    pass
+    x = np.arange(-3, 4, 0.1).reshape((-1, 1))
+    y = 2*np.arange(-3, 4, 0.1).reshape((-1, 1))
+    x_support = np.array((0, 4))
+    y_support = np.array((-0.1, 200))
+    steps = 500
+
+    theta, hist = grad_des_f(linear_h, linear_grad_h, l2_loss, grad_l2_loss, x, y, steps)
+    return 1.99 < theta < 2.01
 
 
 if __name__ == "__main__":
-    save_linear_gif()
+    results = np.array([])
+    results = np.append(results, test_gd(grad_descent))
+    results = np.append(results, test_gd(stochastic_grad_descent))
+    results = np.append(results, test_gd(minibatch_grad_descent))
+
+    print(results)
