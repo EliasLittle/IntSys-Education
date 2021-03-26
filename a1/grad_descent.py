@@ -214,9 +214,15 @@ def grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
-    # TODO 1: Write the traditional gradient descent algorithm without matrix
-    # operations or numpy vectorization
-    # return np.zeros((1,))
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        grad = grad_loss_f(h, grad_h, theta, x, y)
+        for i in range(0, len(theta)):
+            theta[i] -= 0.001*grad[i]
+        history = np.append(history, theta)
+
+    return theta, history
 
 
 def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
@@ -303,7 +309,7 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :rtype: tuple[np.ndarray, np.ndarray]
     """
 
-    # TODO 3: Write the stochastic mini-batch gradient descent algorithm without 
+    # TODO 3: Write the stochastic mini-batch gradient descent algorithm without
     # matrix operations or numpy vectorization
     return np.zeros((1,))
 
@@ -442,7 +448,7 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size)
     :rtype: tuple[np.ndarray, np.ndarray]
     """
 
-    # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH 
+    # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH
     # matrix operations or numpy vectorization
     return np.zeros((1,))
 

@@ -47,6 +47,7 @@ def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
     """
     steps = 500
     _, thetas = grad_des(h, grad_h, loss, dloss, x, y, steps)
+    print(thetas)
 
     fig, ax = plt.subplots()
     ax.set_xlim([x_support[0], x_support[1]])
@@ -130,6 +131,7 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
     import sys
     steps = 500
     _, thetas = grad_des(h, grad_h, loss, dloss, x, y, steps)
+    print(thetas)
 
     fig, ax = plt.subplots()
     ax.set_xlim([min(x) - 0.5, max(x) + 0.5])
@@ -161,6 +163,7 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
     ani = animation.FuncAnimation(fig, animate, steps,
                                   init_func=init, interval=500, blit=True)
 
-    ani.save("linear_anim.gif", writer='imagemagick', fps=30)
+    writer = animation.ImageMagickFileWriter(fps=30)
+    ani.save("linear_anim.gif", writer=writer)
 
     return None
