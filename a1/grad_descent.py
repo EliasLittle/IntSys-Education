@@ -277,7 +277,7 @@ def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     return theta, history
 
 
-def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
+def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=10):
     """grad_descent: gradient descent algorithm on a hypothesis class.
 
     This does not use the matrix operations from numpy, this function
@@ -319,7 +319,6 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     theta = np.random.rand(1, x.shape[1])
     history = np.array([theta])
     for t in range(1, steps):
-        batch_size = 10
         minibatch = [random.randrange(len(x)-1) for _ in range(batch_size)]
         grad = grad_loss_f(h, grad_h, theta, x[minibatch], y[minibatch])
         for i in range(0, len(theta)):
@@ -329,7 +328,7 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     return theta, history
 
 
-def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
+def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     """grad_descent: gradient descent algorithm on a hypothesis class.
 
     This does not use the matrix operations from numpy, this function
@@ -370,10 +369,14 @@ def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        grad = grad_loss_f(h, grad_h, theta, x, y)
+        theta -= 0.001*grad
+        history = np.append(history, theta)
 
-    # TODO 4: Write the traditional gradient descent algorithm WITH matrix
-    # operations or numpy vectorization
-    return np.zeros((1,))
+    return theta, history
 
 
 def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
@@ -416,12 +419,18 @@ def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :rtype: tuple[np.ndarray, np.ndarray]
     """
 
-    # TODO 5: Write the stochastic gradient descent algorithm WITH matrix
-    # operations or numpy vectorization
-    return np.zeros((1,))
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        ix = random.randrange(len(x)-1)
+        grad = grad_loss_f(h, grad_h, theta, x[ix], y[ix])
+        theta -= .01*grad
+        history = np.append(history, theta)
+
+    return theta, history
 
 
-def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
+def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=10):
     """matrix_minibatch_gd: Mini-Batch GD using numpy matrix operations
 
     Stochastic Mini-batch GD with batches of size batch_size using numpy
@@ -462,10 +471,15 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size)
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
+    theta = np.random.rand(1, x.shape[1])
+    history = np.array([theta])
+    for t in range(1, steps):
+        minibatch = [random.randrange(len(x)-1) for _ in range(batch_size)]
+        grad = grad_loss_f(h, grad_h, theta, x[minibatch], y[minibatch])
+        theta -= .01*grad
+        history = np.append(history, theta)
 
-    # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH
-    # matrix operations or numpy vectorization
-    return np.zeros((1,))
+    return theta, history
 
 
 # ============================================================================
@@ -518,5 +532,8 @@ if __name__ == "__main__":
     results = np.append(results, test_gd(grad_descent))
     results = np.append(results, test_gd(stochastic_grad_descent))
     results = np.append(results, test_gd(minibatch_grad_descent))
+    results = np.append(results, test_gd(matrix_gd))
+    results = np.append(results, test_gd(matrix_sgd))
+    results = np.append(results, test_gd(matrix_minibatch_gd))
 
     print(results)
