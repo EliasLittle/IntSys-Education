@@ -1,64 +1,59 @@
 import csv
 import numpy as np
+import torch
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 
 
 class SimpleDataset(Dataset):
     """SimpleDataset [summary]
-    
+
     [extended_summary]
-    
+
     :param path_to_csv: [description]
     :type path_to_csv: [type]
     """
     def __init__(self, path_to_csv, transform=None):
-        ## TODO: Add code to read csv and load data. 
-        ## You should store the data in a field.
-        # Eg (on how to read .csv files):
-        # with open('path/to/.csv', 'r') as f:
-        #   lines = ...
-        ## Look up how to read .csv files using Python. This is common for datasets in projects.
+        self.data = np.genfromtxt(path_to_csv, delimiter=",")
 
         self.transform = transform
-        pass
 
     def __len__(self):
-        """__len__ [summary]
-        
-        [extended_summary]
-        """
-        ## TODO: Returns the length of the dataset.
-        pass
+        """__len__ returns length of dataset"""
+        return len(self.data)
 
     def __getitem__(self, index):
         """__getitem__ [summary]
-        
+
         [extended_summary]
-        
+
         :param index: [description]
         :type index: [type]
         """
-        ## TODO: This returns only ONE sample from the dataset, for a given index.
-        ## The returned sample should be a tuple (x, y) where x is your input 
+        ## This returns only ONE sample from the dataset, for a given index.
+        ## The returned sample should be a tuple (x, y) where x is your input
         ## vector and y is your label
         ## Before returning your sample, you should check if there is a transform
-        ## sepcified, and pply that transform to your sample
+        ## sepcified, and apply that transform to your sample
         # Eg:
         # if self.transform:
         #   sample = self.transform(sample)
         ## Remember to convert the x and y into torch tensors.
+        x, y = torch.from_numpy(self.data[:,:-1]), torch.from_numpy(self.data[:,-1])
+        sample = x[index], y[ index]
+        if self.transform is None:
+            return sample
+        else:
+            return self.transform(sample)
 
-        pass
 
-
-def get_data_loaders(path_to_csv, 
+def get_data_loaders(path_to_csv,
                      transform_fn=None,
-                     train_val_test=[0.8, 0.2, 0.2], 
+                     train_val_test=[0.8, 0.2, 0.2],
                      batch_size=32):
     """get_data_loaders [summary]
-    
+
     [extended_summary]
-    
+
     :param path_to_csv: [description]
     :type path_to_csv: [type]
     :param train_val_test: [description], defaults to [0.8, 0.2, 0.2]
@@ -79,9 +74,13 @@ def get_data_loaders(path_to_csv,
     ## are formed.
 
     ## BEGIN: YOUR CODE
-    train_indices = []
-    val_indices = []
-    test_indices = []
+    test_size = int(train_val_test[-1]*dataset_size)
+    train_val_size = dataset_size - test_size
+    train_size = int(train_val_test[0]*train_val_size)
+
+    train_indices = indices[:train_size]
+    val_indices = indices[train_size:-1*test_size]
+    test_indices = indices[-1*test_size:]
     ## END: YOUR CODE
 
     # Now, we define samplers for each of the train, val and test data
