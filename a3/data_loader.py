@@ -1,47 +1,49 @@
-import csv
-import os
-
+import torch, csv, os, pickle
+import torchvision
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 
-
 class SimpleDataset(Dataset):
     """SimpleDataset [summary]
-    
+
     [extended_summary]
-    
+
     :param path_to_pkl: Path to PKL file with Images
     :type path_to_pkl: str
     :param path_to_labels: path to file with labels
     :type path_to_labels: str
     """
     def __init__(self, path_to_pkl, path_to_labels):
-        ## TODO: Add code to read csv and load data. 
+        ## TODO: Add code to read csv and load data.
         ## You should store the data in a field.
         # Eg (on how to read .csv files):
         # with open('path/to/.csv', 'r') as f:
         #   lines = ...
         ## Look up how to read .csv files using Python. This is common for datasets in projects.
-        pass
+        self.images = pickle.load(open(path_to_pkl, 'rb'))
+
+        with open(path_to_labels, 'r') as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                self.labels = list(map(lambda x: int(x), row))
 
     def __len__(self):
         """__len__ [summary]
-        
+
         [extended_summary]
         """
-        ## TODO: Returns the length of the dataset.
-        pass
+        return len(self.images)
 
     def __getitem__(self, index):
         """__getitem__ [summary]
-        
+
         [extended_summary]
-        
+
         :param index: [description]
         :type index: [type]
         """
         ## TODO: This returns only ONE sample from the dataset, for a given index.
-        ## The returned sample should be a tuple (x, y) where x is your input 
+        ## The returned sample should be a tuple (x, y) where x is your input
         ## vector and y is your label
         ## Before returning your sample, you should check if there is a transform
         ## sepcified, and pply that transform to your sample
@@ -49,18 +51,22 @@ class SimpleDataset(Dataset):
         # if self.transform:
         #   sample = self.transform(sample)
         ## Remember to convert the x and y into torch tensors.
+        img = self.images[index]
+        img = torchvision.transforms.ToTensor()(img).unsqueeze_(0)
 
-        pass
+        lbl = torch.tensor(self.labels[index])
+
+        return img, lbl
 
 
-def get_data_loaders(path_to_pkl, 
+def get_data_loaders(path_to_pkl,
                      path_to_labels,
-                     train_val_test=[0.8, 0.2, 0.2], 
+                     train_val_test=[0.8, 0.1, 0.1],
                      batch_size=32):
     """get_data_loaders [summary]
-    
+
     [extended_summary]
-    
+
     :param path_to_csv: [description]
     :type path_to_csv: [type]
     :param train_val_test: [description], defaults to [0.8, 0.2, 0.2]
