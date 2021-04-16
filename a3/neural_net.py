@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 from data_loader import get_data_loaders
@@ -8,9 +9,9 @@ from typing import List, Union, Tuple
 
 class SimpleNeuralNetModel(nn.Module):
     """SimpleNeuralNetModel [summary]
-    
+
     [extended_summary]
-    
+
     :param layer_sizes: Sizes of the input, hidden, and output layers of the NN
     :type layer_sizes: List[int]
     """
@@ -20,24 +21,32 @@ class SimpleNeuralNetModel(nn.Module):
         # The first number represents the input size and the output would be
         # the last number, with the numbers in between representing the
         # hidden layer sizes
-        raise NotImplementedError()
-    
+        self.layers = []
+
+        for i in range(0:len(layer_sizes)-2):
+            self.layers.append(nn.Linear(layer_sizes[i], layer_sizes[i+1]))
+
     def forward(self, x):
         """forward generates the prediction for the input x.
-        
+
         :param x: Input array of size (Batch,Input_layer_size)
         :type x: np.ndarray
         :return: The prediction of the model
         :rtype: np.ndarray
         """
-        raise NotImplementedError()
+        layer = self.layers[0]
+        x = F.relu(self.layers[0](x))
+        for i in range(1:len(self.layers)-2):
+            layer = self.layers[i]
+            x = F.relu(layer(x))
+        return self.layers[-1](x)
 
 
 class SimpleConvNetModel(nn.Module):
     """SimpleConvNetModel [summary]
-    
+
     [extended_summary]
-    
+
     :param img_shape: size of input image as (W, H)
     :type img_shape: Tuple[int, int]
     :param output_shape: output shape of the neural net
@@ -51,10 +60,10 @@ class SimpleConvNetModel(nn.Module):
         # represent the output_shape (tuple of 2 ints, tuple of 1 int, just an
         # int , etc).
         raise NotImplementedError()
-    
+
     def forward(self, x):
         """forward generates the prediction for the input x.
-        
+
         :param x: Input array of size (Batch,Input_layer_size)
         :type x: np.ndarray
         :return: The prediction of the model
