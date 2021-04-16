@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from PIL import Image
+import csv
 
 
 def load_pickle_file(path_to_file):
@@ -12,8 +13,9 @@ def load_pickle_file(path_to_file):
     # with open(path_to_file, 'rb') as f:
     #   obj = pickle....
     ## We will let you figure out which pickle operation to use
-    pass
-
+    with open(path_to_file, 'rb') as f:
+        obj = pickle.load(f)
+        return obj
 
 ## You should define functions to resize, rotate and crop images
 ## below. You can perform these operations either on numpy arrays
@@ -27,7 +29,7 @@ def load_pickle_file(path_to_file):
 #   val/
 
 ## Inside the train and val folders, you will have to dump the CLEANED images and
-## labels. You can dump images/annotations in a pickle file (because our data loader 
+## labels. You can dump images/annotations in a pickle file (because our data loader
 ## expects the path to a pickle file.)
 
 ## Most code written in this file will be DIY. It's important that you get to practice
@@ -42,4 +44,19 @@ if __name__ == "__main__":
     ## To correct rotated images and add missing labels, you might want to prompt the terminal
     ## for input, so that you can input the angle and the missing label
     ## Remember, the first 60 images are rotated, and might contain missing labels.
-    pass
+    imgs = load_pickle_file('data/data/images.pkl')
+    img_train_idx = int(0.8*len(imgs))
+    with open("data/data/train/images.pkl", "wb") as f:
+        pickle.dump(imgs[0:img_train_idx], f)
+    with open("data/data/val/images.pkl", "wb") as f:
+        pickle.dump(imgs[img_train_idx:-1], f)
+
+    lbls = load_pickle_file('data/data/labels.pkl')
+    lbl_train_idx = int(0.8*len(lbls))
+    with open("data/data/train/labels.csv", "w") as f:
+            writer = csv.writer(f)
+            writer.writerow(lbls[0:lbl_train_idx])
+
+    with open("data/data/val/labels.csv", "w") as f:
+            writer = csv.writer(f)
+            writer.writerow(lbls[lbl_train_idx:-1])
