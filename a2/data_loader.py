@@ -38,7 +38,7 @@ class SimpleDataset(Dataset):
         # if self.transform:
         #   sample = self.transform(sample)
         ## Remember to convert the x and y into torch tensors.
-        x, y = torch.from_numpy(self.data[:,:-1]), torch.from_numpy(self.data[:,-1])
+        x, y = torch.from_numpy(self.data[:,:-1]).float(), torch.from_numpy(self.data[:,-1]).float()
         sample = x[index], y[ index]
         if self.transform is None:
             return sample
